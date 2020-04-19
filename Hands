@@ -1,0 +1,232 @@
+void newhands()
+    {
+        RaycastHit hit;
+        Vector3 makaroni = Camera.main.ScreenPointToRay(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0)).GetPoint(10);
+        float distante = Vector3.Distance(transform.position, new Vector3(makaroni.x, makaroni.y, 0));
+        float blyat = Mathf.Sqrt(r * r - distante * distante) / 2;
+        Vector2 mouseinputtto = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+        Vector3 blyatto = new Vector3(mouseinput.x, mouseinput.y, 0).normalized * distante / 2;
+        Vector2 mniammo = Vector2.Perpendicular(new Vector2(blyatto.x, blyatto.y).normalized * blyat);
+        Vector2 Minusmniammo = -Vector2.Perpendicular(new Vector2(blyatto.x, blyatto.y).normalized * blyat);
+
+        if (Input.GetMouseButton(0)) findhands = true;
+        else
+        {
+            findhands = false;
+            handonground = false;
+        }
+
+        //other
+        if(handonground == false)
+        {
+            if (distante < r)
+            {
+                if ((Physics.Raycast(new Ray(transform.position, blyatto + (Vector3)mniammo), r / 2) || Physics.Raycast(new Ray(blyatto + (Vector3)mniammo + transform.position, -blyatto - (Vector3)mniammo + makaroni - transform.position), r / 2))
+                    && (Physics.Raycast(new Ray(transform.position, blyatto + (Vector3)Minusmniammo), r / 2) || Physics.Raycast(new Ray(blyatto + (Vector3)Minusmniammo + transform.position, new Vector3(makaroni.x, makaroni.y, 0) - transform.position - (blyatto + (Vector3)Minusmniammo)), r / 2)))
+                {
+                    checkerrotation = true;
+                }
+                else if (Physics.Raycast(new Ray(transform.position, blyatto + (Vector3)mniammo), r / 2) || Physics.Raycast(new Ray(blyatto + (Vector3)mniammo + transform.position, -blyatto - (Vector3)mniammo + makaroni - transform.position), r / 2))
+                {
+                    rotationofhands = true;
+                    checkerrotation = false;
+                }
+                else if (Physics.Raycast(new Ray(transform.position, blyatto + (Vector3)Minusmniammo), r / 2) || Physics.Raycast(new Ray(blyatto + (Vector3)Minusmniammo + transform.position, new Vector3(makaroni.x, makaroni.y, 0) - transform.position - (blyatto + (Vector3)Minusmniammo)), r / 2))
+                {
+                    rotationofhands = false;
+                    checkerrotation = false;
+                }
+                Debug.DrawRay(transform.position, blyatto + (Vector3)Minusmniammo);        
+                Debug.DrawRay(blyatto + (Vector3)Minusmniammo + transform.position, new Vector3(makaroni.x, makaroni.y, 0) - transform.position - (blyatto + (Vector3)Minusmniammo));        
+                if (grounded == true || jumping == true)
+                {
+                    if (Physics.Raycast(new Ray(new Vector3(makaroni.x, makaroni.y, 0), new Vector2(0, mouseinputtto.y)), out hit, Mathf.Abs(mouseinputtto.y)) && findhands == true)
+                    {
+                        blyattopoitno = hit.point;
+                        handonground = true;
+                        moveandrotatehandtoPoint(hit.point, false);
+                        moveandrotatehandtoPoint(hit.point, rotationofhands);
+
+                    }
+                    else if(checkerrotation == true && Physics.Raycast(new Ray(transform.position,new Vector3(makaroni.x,makaroni.y,0) - transform.position), out hit, distante))
+                    {
+                        moveandrotatehandtoPoint(hit.point, rotationofhands);
+
+                    }
+                    else 
+                    {
+                        moveandrotatehandtoPoint(makaroni, rotationofhands);
+                    }
+                }
+                else
+                {
+                    Debug.Log(rotationofhands);
+                    if (Physics.Raycast(new Ray(transform.position, blyatto + (Vector3)mniammo + Vector3.down * 0.11f), Vector3.Distance(blyatto + (Vector3)mniammo, Vector3.zero) + 0.11f) || Physics.Raycast(new Ray(blyatto + (Vector3)mniammo + transform.position, -blyatto - (Vector3)mniammo + makaroni - transform.position + Vector3.down * 0.11f), 1.11f))
+                    {
+                        rotationofhands = true;
+
+                    }
+                    else if (Physics.Raycast(new Ray(transform.position, blyatto + (Vector3)Minusmniammo + Vector3.down * 0.11f), Vector3.Distance(blyatto + (Vector3)Minusmniammo, Vector3.zero) + 0.11f) || Physics.Raycast(new Ray(blyatto + (Vector3)Minusmniammo + transform.position, blyatto - (Vector3)Minusmniammo + makaroni - transform.position + Vector3.down * 0.11f), 1.11f))
+                    {
+                        rotationofhands = false;
+
+                    }
+
+                    if (Physics.Raycast(new Ray(new Vector3(makaroni.x, makaroni.y, 0), new Vector2(0, mouseinputtto.y) - Vector2.up * 0.1f), out hit, Mathf.Abs(mouseinputtto.y) + 0.1f) && findhands == true)
+                    {
+                        blyattopoitno = hit.point;
+                        handonground = true;
+
+                        moveandrotatehandtoPoint(hit.point, rotationofhands);
+
+                    }
+                    else
+                    {
+                        moveandrotatehandtoPoint(makaroni, rotationofhands);
+                    }
+                }
+            }
+            else
+            {
+                Debug.DrawRay((new Vector3(makaroni.x, makaroni.y, 0) - transform.position).normalized * r + transform.position, new Vector2(0, mouseinputtto.y), Color.red);
+
+                if (grounded == true || jumping == true)
+                {                    
+                    if (Physics.Raycast(new Ray(transform.position,new Vector3(makaroni.y - transform.position.y, makaroni.y - transform.position.y,0)), out hit, r))
+                    {
+                        Physics.Raycast(new Ray(transform.position, new Vector3(mouseinput.x, mouseinput.y, 0).normalized), out hit, distante, 1);
+                        moveandrotatehandtoPoint(hit.point, false);
+
+                    }
+                    else if (Physics.Raycast(new Ray((new Vector3(makaroni.x, makaroni.y, 0) - transform.position).normalized * r + transform.position, new Vector2(0, mouseinputtto.y)), out hit, Mathf.Abs(mouseinputtto.y)) && findhands == true)
+                    {
+                        blyattopoitno = hit.point;
+                        handonground = true;
+                        moveandrotatehandtoPoint(hit.point, false);
+
+                    }
+                    else
+                    {
+                        moveandrotatehandT();
+                    }
+                }
+                else
+                {
+                    
+                    if (Physics.Raycast(new Ray(transform.position, new Vector3(makaroni.y - transform.position.y, makaroni.y - transform.position.y, 0) + Vector3.down * 0.1f), out hit, r + 0.1f))
+                    {
+                        Physics.Raycast(new Ray(transform.position, new Vector3(mouseinput.x, mouseinput.y, 0).normalized), out hit, distante, 1);
+                        moveandrotatehandtoPoint(hit.point, false);
+
+                    }
+                    else if (Physics.Raycast(new Ray((new Vector3(makaroni.x, makaroni.y, 0) - transform.position).normalized * r + transform.position, new Vector2(0, mouseinputtto.y) - Vector2.up * 0.1f), out hit, Mathf.Abs(mouseinputtto.y) + 0.1f) && findhands == true)
+                    {
+                        blyattopoitno = hit.point;
+                        handonground = true;
+
+                        moveandrotatehandtoPoint(hit.point, false);
+
+                    }
+                    else
+                    {
+                        moveandrotatehandT();
+                    }
+                }
+
+            }
+        }
+        else
+        {
+            movingwithmouse(blyattopoitno);
+        }
+    }
+    
+    void movingwithmouse(Vector3 point)
+    {
+        Vector2 mouseaxises = -new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y")) / 5;
+        float distante = Vector3.Distance((Vector3)mouseaxises + transform.position, point);
+
+        if (distante < r)
+        {
+            transform.Translate(mouseaxises);
+            moveandrotatehandtoPoint(point, false);
+        }
+        else
+        {
+            transform.Translate(((transform.position - point + (Vector3)mouseaxises).normalized * r) - transform.position + point);
+            moveandrotatehandTtoPoint(point);
+        }
+    }
+
+    void moveandrotatehandtoPoint(Vector3 hitpoint, bool rotateway)
+    {
+        float distante = Vector3.Distance(transform.position, hitpoint);
+        float blyat = Mathf.Sqrt(r * r - distante * distante) / 2;
+
+        Vector3 blyatto = -(transform.position - hitpoint).normalized * distante / 2;
+        Vector2 mniammo;
+        if (rotateway == false) mniammo = Vector2.Perpendicular(new Vector2(blyatto.x, blyatto.y).normalized * blyat);
+        else mniammo = -Vector2.Perpendicular(new Vector2(blyatto.x, blyatto.y).normalized * blyat);
+
+
+        Debug.DrawLine(transform.position, transform.position + blyatto + (Vector3)mniammo, Color.blue);
+        Debug.DrawLine(hitpoint, transform.position + blyatto + (Vector3)mniammo, Color.blue);
+        Debug.DrawLine(transform.position, hitpoint, Color.blue);
+
+
+        //1sthand
+        handsgm[0].transform.position = (blyatto + (Vector3)mniammo) / 2 + transform.position;
+        if ((blyatto.x + mniammo.x) / 2 < 0) handsgm[0].transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(Vector2.up, blyatto + (Vector3)mniammo));
+        else handsgm[0].transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(Vector2.down, blyatto + (Vector3)mniammo));
+        
+        //2ndhand
+        handsgm[1].transform.position = blyatto + (blyatto + (Vector3)mniammo) / 2 + transform.position;
+        if (blyatto.x + mniammo.x < hitpoint.x - transform.position.x) handsgm[1].transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(blyatto - (blyatto + (Vector3)mniammo) / 2, Vector2.down));
+        else handsgm[1].transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(blyatto - (blyatto + (Vector3)mniammo) / 2, Vector2.up));
+       
+    }
+
+    void moveandrotatehandTtoPoint(Vector3 hitpoint)
+    {
+        //1sthand
+        handsgm[0].transform.position = (hitpoint - transform.position).normalized * r / 4 + transform.position;
+        if (transform.position.x - hitpoint.x >= 0) handsgm[0].transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(Vector2.up, (hitpoint - transform.position).normalized));
+        else handsgm[0].transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(Vector2.down, (hitpoint - transform.position).normalized));
+
+        //2ndhand
+        handsgm[1].transform.position = (hitpoint - transform.position).normalized * 3 * r / 4 + transform.position;
+        if (transform.position.x - hitpoint.x >= 0) handsgm[1].transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(Vector2.up, (hitpoint - transform.position).normalized));
+        else handsgm[1].transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(Vector2.down, (hitpoint - transform.position).normalized));
+    }
+
+    void moveandrotatehandtomouse(Vector2 makaroni)
+    {
+        float distante = Vector3.Distance(transform.position, new Vector3(makaroni.x, makaroni.y, 0));
+        float blyat = Mathf.Sqrt(r * r - distante * distante) / 2;
+
+        Vector3 blyatto = new Vector3(mouseinput.x, mouseinput.y, 0).normalized * distante / 2;
+        Vector2 mniammo = Vector2.Perpendicular(new Vector2(blyatto.x, blyatto.y).normalized * blyat);
+        //1sthand
+        handsgm[0].transform.position = (blyatto + (Vector3)mniammo) / 2 + transform.position;
+        if ((blyatto.x + mniammo.x) / 2 < 0) handsgm[0].transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(Vector2.up, blyatto + (Vector3)mniammo));
+        else handsgm[0].transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(Vector2.down, blyatto + (Vector3)mniammo));
+
+        //2ndhand
+        handsgm[1].transform.position = new Vector3(mouseinput.x, mouseinput.y, 0).normalized * distante / 2 + (blyatto + (Vector3)mniammo) / 2 + transform.position;
+        if (blyatto.x + mniammo.x > makaroni.x - transform.position.x) handsgm[1].transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(new Vector3(mouseinput.x, mouseinput.y, 0).normalized * distante / 2 - (blyatto + (Vector3)mniammo) / 2, Vector2.up));
+        else handsgm[1].transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(new Vector3(mouseinput.x, mouseinput.y, 0).normalized * distante / 2 - (blyatto + (Vector3)mniammo) / 2, Vector2.down));
+    }
+
+
+    void moveandrotatehandT()
+    {
+        //1sthand
+        handsgm[0].transform.position = new Vector3(mouseinput.x, mouseinput.y, 0).normalized * r / 4 + transform.position;
+        if (mouseinput.x <= 0) handsgm[0].transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(Vector2.up, new Vector3(mouseinput.x, mouseinput.y, 0).normalized));
+        else handsgm[0].transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(Vector2.down, new Vector3(mouseinput.x, mouseinput.y, 0).normalized));
+
+        //2ndhand
+        handsgm[1].transform.position = new Vector3(mouseinput.x, mouseinput.y, 0).normalized * 3 * r / 4 + transform.position;
+        if (mouseinput.x <= 0) handsgm[1].transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(Vector2.up, new Vector3(mouseinput.x, mouseinput.y, 0).normalized));
+        else handsgm[1].transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(Vector2.down, new Vector3(mouseinput.x, mouseinput.y, 0).normalized));
+    }
